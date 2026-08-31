@@ -1,0 +1,25 @@
+# Build results
+bin/
+obj/
+out/
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.user
+*.suo
+
+# .NET secrets (nunca deben subirse)
+appsettings.Development.json
+appsettings.*.local.json
+secrets.json
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Rider/VS Code
+.vscode/
