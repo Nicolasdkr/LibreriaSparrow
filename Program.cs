@@ -1,27 +1,37 @@
+using Microsoft.EntityFrameworkCore;
+using LibreriaSparrow.Api.Data;
+using LibreriaSparrow.Api.Repositories;
+using LibreriaSparrow.Api.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);
 builder.Services.AddOpenApi();
-
-var app = builder.Build();
 
 var connectionString = builder.Configuration.GetConnectionString("Default");
 builder.Services.AddDbContext<LibreriaContext>(options =>
     options.UseSqlServer(connectionString));
 
-// Configure the HTTP request pipeline.
+builder.Services.AddScoped<ILibroRepository, LibroRepository>();
+builder.Services.AddScoped<ILibroService, LibroService>();
+builder.Services.AddScoped<IProveedorRepository, ProveedorRepository>();
+builder.Services.AddScoped<IProveedorService, ProveedorService>();
+builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
+builder.Services.AddScoped<IClienteService, ClienteService>();
+builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
+builder.Services.AddScoped<IPedidoService, PedidoService>();
+
+var app = builder.Build();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
