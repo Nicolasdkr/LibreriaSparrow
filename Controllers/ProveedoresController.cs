@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using LibreriaSparrow.Api.Models;
 using LibreriaSparrow.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LibreriaSparrow.Api.Controllers;
 
@@ -19,6 +20,7 @@ public class ProveedoresController(IProveedorService service) : ControllerBase
         return proveedor is null ? NotFound() : Ok(proveedor);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> Create(Proveedor proveedor)
     {
@@ -33,10 +35,12 @@ public class ProveedoresController(IProveedorService service) : ControllerBase
         }
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, Proveedor proveedor) =>
         await service.UpdateAsync(id, proveedor) ? NoContent() : NotFound();
 
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id) =>
         await service.DeleteAsync(id) ? NoContent() : NotFound();

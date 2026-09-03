@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using LibreriaSparrow.Api.DTOs;
 using LibreriaSparrow.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LibreriaSparrow.Api.Controllers;
 
@@ -8,6 +9,7 @@ namespace LibreriaSparrow.Api.Controllers;
 [Route("api/[controller]")]
 public class PedidosController(IPedidoService service) : ControllerBase
 {
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAll() =>
         Ok(await service.GetAllAsync());

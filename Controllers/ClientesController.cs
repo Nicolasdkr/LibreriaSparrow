@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using LibreriaSparrow.Api.Models;
 using LibreriaSparrow.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LibreriaSparrow.Api.Controllers;
 
@@ -9,6 +10,7 @@ namespace LibreriaSparrow.Api.Controllers;
 [Route("api/[controller]")]
 public class ClientesController(IClienteService service) : ControllerBase
 {
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAll() =>
         Ok(await service.GetAllAsync());
