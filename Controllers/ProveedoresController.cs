@@ -1,7 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using LibreriaSparrow.Api.Models;
 using LibreriaSparrow.Api.Services;
-using Microsoft.AspNetCore.Authorization;
+using LibreriaSparrow.Api.Mappers;
 
 namespace LibreriaSparrow.Api.Controllers;
 
@@ -11,13 +12,13 @@ public class ProveedoresController(IProveedorService service) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetAll() =>
-        Ok(await service.GetAllAsync());
+        Ok((await service.GetAllAsync()).Select(p => p.ToDto()));
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
         var proveedor = await service.GetByIdAsync(id);
-        return proveedor is null ? NotFound() : Ok(proveedor);
+        return proveedor is null ? NotFound() : Ok(proveedor.ToDto());
     }
 
     [Authorize(Roles = "Admin")]
@@ -27,7 +28,7 @@ public class ProveedoresController(IProveedorService service) : ControllerBase
         try
         {
             var creado = await service.CreateAsync(proveedor);
-            return CreatedAtAction(nameof(GetById), new { id = creado.Id }, creado);
+            return CreatedAtAction(nameof(GetById), new { id = creado.Id }, creado.ToDto());
         }
         catch (ArgumentException ex)
         {

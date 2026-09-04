@@ -1,8 +1,8 @@
-// Controllers/ClientesController.cs
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using LibreriaSparrow.Api.Models;
 using LibreriaSparrow.Api.Services;
-using Microsoft.AspNetCore.Authorization;
+using LibreriaSparrow.Api.Mappers;
 
 namespace LibreriaSparrow.Api.Controllers;
 
@@ -13,13 +13,13 @@ public class ClientesController(IClienteService service) : ControllerBase
     [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAll() =>
-        Ok(await service.GetAllAsync());
+        Ok((await service.GetAllAsync()).Select(c => c.ToDto()));
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
         var cliente = await service.GetByIdAsync(id);
-        return cliente is null ? NotFound() : Ok(cliente);
+        return cliente is null ? NotFound() : Ok(cliente.ToDto());
     }
 
     [HttpPost]
@@ -28,7 +28,7 @@ public class ClientesController(IClienteService service) : ControllerBase
         try
         {
             var creado = await service.CreateAsync(cliente);
-            return CreatedAtAction(nameof(GetById), new { id = creado.Id }, creado);
+            return CreatedAtAction(nameof(GetById), new { id = creado.Id }, creado.ToDto());
         }
         catch (ArgumentException ex)
         {
@@ -40,6 +40,7 @@ public class ClientesController(IClienteService service) : ControllerBase
     public async Task<IActionResult> Update(int id, Cliente cliente) =>
         await service.UpdateAsync(id, cliente) ? NoContent() : NotFound();
 
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id) =>
         await service.DeleteAsync(id) ? NoContent() : NotFound();

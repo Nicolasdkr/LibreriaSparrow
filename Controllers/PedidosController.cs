@@ -1,7 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using LibreriaSparrow.Api.DTOs;
 using LibreriaSparrow.Api.Services;
-using Microsoft.AspNetCore.Authorization;
+using LibreriaSparrow.Api.Mappers;
 
 namespace LibreriaSparrow.Api.Controllers;
 
@@ -12,13 +13,13 @@ public class PedidosController(IPedidoService service) : ControllerBase
     [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAll() =>
-        Ok(await service.GetAllAsync());
+        Ok((await service.GetAllAsync()).Select(p => p.ToDto()));
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
         var pedido = await service.GetByIdAsync(id);
-        return pedido is null ? NotFound() : Ok(pedido);
+        return pedido is null ? NotFound() : Ok(pedido.ToDto());
     }
 
     [HttpPost]
@@ -27,7 +28,7 @@ public class PedidosController(IPedidoService service) : ControllerBase
         try
         {
             var creado = await service.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = creado.Id }, creado);
+            return CreatedAtAction(nameof(GetById), new { id = creado.Id }, creado.ToDto());
         }
         catch (ArgumentException ex)
         {
